@@ -4,6 +4,7 @@ import requests
 from PIL import Image
 import json
 import pygame
+from save_map_image import save_map_image
 
 toponym_to_find = input()
 geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
@@ -24,10 +25,10 @@ with open('response.json', 'w') as file:
 try:
     coords = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].split()
 except Exception:
-    print('Адресс не найден')
+    print('Адрес не найден')
     sys.exit(1)
-x, y = coords
 
+x, y = coords
 api_server = "http://static-maps.yandex.ru/1.x/"
 spn = 0.01
 params = {
@@ -35,20 +36,9 @@ params = {
     'spn': f'{spn},{spn}',
     'l': 'sat'
 }
-
-response = requests.get(api_server, params=params)
-
-if not response:
-    print("Ошибка выполнения запроса:")
-    print("Http статус:", response.status_code, "(", response.reason, ")")
-    sys.exit(1)
-
-map_file = f"map.png"
-with open(map_file, "wb") as file:
-    file.write(response.content)
-
 map_file = 'map.png'
-map_number = 0
+save_map_image(map_file, params)
+
 pygame.init()
 screen = pygame.display.set_mode((600, 450))
 
@@ -57,5 +47,45 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.blit(pygame.image.load('map.png'), (0, 0))
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_UP:
+                spn = float(params['spn'].split(',')[0])
+                x, y = [float(i) for i in params['ll'].split(',')]
+                y += spn
+                if y > 90:
+                    y -= spn
+                if y < -90:
+                    y += spn
+                x = x % 180
+                params['ll'] = f'{x},{y}'
+            if event.key == pygame.K_DOWN:
+                x, y = [float(i) for i in params['ll'].split(',')]
+                y -= spn
+                if y > 90:
+                    y -= spn
+                if y < -90:
+                    y += spn
+                x = x % 180
+                params['ll'] = f'{x},{y}'
+            if event.key == pygame.K_LEFT:
+                x, y = [float(i) for i in params['ll'].split(',')]
+                x -= spn
+                if y > 90:
+                    y -= spn
+                if y < -90:
+                    y += spn
+                x = x % 180
+                params['ll'] = f'{x},{y}'
+            if event.key == pygame.K_RIGHT:
+                x, y = [float(i) for i in params['ll'].split(',')]
+                x += spn
+                if y > 90:
+                    y -= spn
+                if y < -90:
+                    y += spn
+                x = x % 180
+                params['ll'] = f'{x},{y}'
+            save_map_image(map_file, params)
+    screen.blit(pygame.image.load(map_file), (0, 0))
     pygame.display.flip()
