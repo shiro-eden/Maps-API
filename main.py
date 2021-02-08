@@ -74,43 +74,43 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-
+            print(params)
             if event.key == pygame.K_UP:
                 spn = float(params['spn'].split(',')[0])
                 x, y = [float(i) for i in params['ll'].split(',')]
                 y += spn
-                if y > 90:
-                    y -= spn
-                if y < -90:
-                    y += spn
-                x = x % 180
+                if x > 90:
+                    x -= spn
+                if x < -90:
+                    x += spn
+                y = y % 180
                 params['ll'] = f'{x},{y}'
             if event.key == pygame.K_DOWN:
                 x, y = [float(i) for i in params['ll'].split(',')]
                 y -= spn
-                if y > 90:
-                    y -= spn
-                if y < -90:
-                    y += spn
-                x = x % 180
+                if x > 90:
+                    x -= spn
+                if x < -90:
+                    x += spn
+                y = y % 180
                 params['ll'] = f'{x},{y}'
             if event.key == pygame.K_LEFT:
                 x, y = [float(i) for i in params['ll'].split(',')]
                 x -= spn
-                if y > 90:
-                    y -= spn
-                if y < -90:
-                    y += spn
-                x = x % 180
+                if x > 90:
+                    x -= spn
+                if x < -90:
+                    x += spn
+                y = y % 180
                 params['ll'] = f'{x},{y}'
             if event.key == pygame.K_RIGHT:
                 x, y = [float(i) for i in params['ll'].split(',')]
                 x += spn
-                if y > 90:
-                    y -= spn
-                if y < -90:
-                    y += spn
-                x = x % 180
+                if x > 90:
+                    x -= spn
+                if x < -90:
+                    x += spn
+                y = y % 180
                 params['ll'] = f'{x},{y}'
 
             save_map_image(map_file, params)
