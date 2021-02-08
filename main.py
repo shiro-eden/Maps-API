@@ -4,9 +4,23 @@ import requests
 from PIL import Image
 import json
 import pygame
+from Button import Button
 from save_map_image import save_map_image
+from GameParameter import display, fps, clock
 
-toponym_to_find = input()
+
+def change_view():
+    global params, map_file
+    if params['l'] == 'sat':
+        params['l'] = 'map'
+    elif params['l'] == 'map':
+        params['l'] = 'sat,skl'
+    elif params['l'] == 'sat,skl':
+        params['l'] = 'sat'
+    save_map_image(map_file, params)
+
+
+toponym_to_find = input('Введите название объекта:')
 geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
 geocoder_params = {
@@ -40,9 +54,10 @@ map_file = 'map.png'
 save_map_image(map_file, params)
 
 pygame.init()
-screen = pygame.display.set_mode((600, 450))
-
 running = True
+change_view_btn_image = [pygame.transform.scale(pygame.image.load('button_view.png'), (100, 50))]
+change_view_btn = Button(10, 10, 100, 100, '', change_view_btn_image, func=change_view)
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -87,5 +102,6 @@ while running:
                 x = x % 180
                 params['ll'] = f'{x},{y}'
             save_map_image(map_file, params)
-    screen.blit(pygame.image.load(map_file), (0, 0))
+    display.blit(pygame.image.load(map_file), (0, 0))
+    change_view_btn.draw(10, 10)
     pygame.display.flip()
