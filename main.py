@@ -7,6 +7,8 @@ import pygame
 from Button import Button
 from save_map_image import save_map_image
 from GameParameter import display, fps, clock
+from PyQt5.QtWidgets import QInputDialog
+from change_place import change_place
 
 
 def change_view():
@@ -20,7 +22,13 @@ def change_view():
     save_map_image(map_file, params)
 
 
-toponym_to_find = input('Введите название объекта:')
+def show_change_place():
+    global params
+    params = change_place(params)
+    save_map_image(map_file, params)
+
+
+toponym_to_find = 'Саратов'
 geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
 geocoder_params = {
@@ -48,7 +56,8 @@ spn = 0.01
 params = {
     'll': f'{x},{y}',
     'spn': f'{spn},{spn}',
-    'l': 'sat'
+    'l': 'sat',
+    'pt': ''
 }
 map_file = 'map.png'
 save_map_image(map_file, params)
@@ -57,7 +66,9 @@ pygame.init()
 running = True
 change_view_btn_image = [pygame.transform.scale(pygame.image.load('button_view.png'), (100, 50))]
 change_view_btn = Button(10, 10, 100, 100, '', change_view_btn_image, func=change_view)
-
+change_place_btn_image = [pygame.transform.scale(pygame.image.load('button_view.png'), (100, 50))]
+change_place_btn = Button(300, 10, 100, 100, '', change_place_btn_image, func=show_change_place)
+show_change_place()
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -101,7 +112,9 @@ while running:
                     y += spn
                 x = x % 180
                 params['ll'] = f'{x},{y}'
+
             save_map_image(map_file, params)
     display.blit(pygame.image.load(map_file), (0, 0))
     change_view_btn.draw(10, 10)
+    change_place_btn.draw(300, 10)
     pygame.display.flip()
