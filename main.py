@@ -1,7 +1,5 @@
 import sys
-from io import BytesIO
 import requests
-from PIL import Image
 import json
 import pygame
 from Button import Button
@@ -15,10 +13,13 @@ def change_view():
     global params, map_file
     if params['l'] == 'sat':
         params['l'] = 'map'
+        change_view_btn.text = 'Карта'
     elif params['l'] == 'map':
         params['l'] = 'sat,skl'
+        change_view_btn.text = 'Гибрид'
     elif params['l'] == 'sat,skl':
         params['l'] = 'sat'
+        change_view_btn.text = 'Спутник'
     save_map_image(map_file, params)
 
 
@@ -62,21 +63,25 @@ params = {
 map_file = 'map.png'
 save_map_image(map_file, params)
 
+show_change_place()
 pygame.init()
 running = True
-change_view_btn_image = [pygame.transform.scale(pygame.image.load('button_view.png'), (100, 50))]
-change_view_btn = Button(10, 10, 100, 100, '', change_view_btn_image, func=change_view)
-change_place_btn_image = [pygame.transform.scale(pygame.image.load('button_view.png'), (100, 50))]
-change_place_btn = Button(300, 10, 100, 100, '', change_place_btn_image, func=show_change_place)
-show_change_place()
+screen = pygame.display.set_mode((900, 450))
+change_view_btn_image = [pygame.image.load(f'button_{i}.png') for i in range(2)]
+change_view_btn = Button(630, 10, 250, 50, 'Спутник', change_view_btn_image,
+                         func=change_view)
+change_place_btn_image = [pygame.image.load(f'button_{i}.png') for i in range(2)]
+change_place_btn = Button(630, 100, 250, 50, 'Сменить место', change_place_btn_image,
+                          func=show_change_place)
 while running:
+    screen.fill((47, 49, 54))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
+            x, y = [float(i) for i in params['ll'].split(',')]
             if event.key == pygame.K_UP:
                 spn = float(params['spn'].split(',')[0])
-                x, y = [float(i) for i in params['ll'].split(',')]
                 y += spn
                 if y > 90:
                     y -= spn
@@ -86,9 +91,7 @@ while running:
                     x = (x - 180) - 180
                 if x < -180:
                     x = 180 - (-x - 180)
-                params['ll'] = f'{x},{y}'
             if event.key == pygame.K_DOWN:
-                x, y = [float(i) for i in params['ll'].split(',')]
                 y -= spn
                 if y > 90:
                     y -= spn
@@ -98,9 +101,7 @@ while running:
                     x = (x - 180) - 180
                 if x < -180:
                     x = 180 - (-x - 180)
-                params['ll'] = f'{x},{y}'
             if event.key == pygame.K_LEFT:
-                x, y = [float(i) for i in params['ll'].split(',')]
                 x -= spn
                 if y > 90:
                     y -= spn
@@ -110,9 +111,7 @@ while running:
                     x = (x - 180) - 180
                 if x < -180:
                     x = 180 - (-x - 180)
-                params['ll'] = f'{x},{y}'
             if event.key == pygame.K_RIGHT:
-                x, y = [float(i) for i in params['ll'].split(',')]
                 x += spn
                 if y > 90:
                     y -= spn
@@ -122,10 +121,17 @@ while running:
                     x = (x - 180) - 180
                 if x < -180:
                     x = 180 - (-x - 180)
-                params['ll'] = f'{x},{y}'
-
+            if event.key == pygame.K_PAGEDOWN:
+                spn = float(params['spn'].split(',')[0])
+                if spn < 45:
+                    params['spn'] = f'{spn * 2},{spn * 2}'
+            if event.key == pygame.K_PAGEUP:
+                spn = float(params['spn'].split(',')[0])
+                if spn > 0.000625:
+                    params['spn'] = f'{spn / 2},{spn / 2}'
+            params['ll'] = f'{x},{y}'
             save_map_image(map_file, params)
     display.blit(pygame.image.load(map_file), (0, 0))
-    change_view_btn.draw(10, 10)
-    change_place_btn.draw(300, 10)
+    change_view_btn.draw(710, 25)
+    change_place_btn.draw(680, 115)
     pygame.display.flip()

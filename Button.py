@@ -6,6 +6,16 @@ pygame.init()
 glow_v = 1000
 
 
+def drawing_text(text, cords, font_color=pygame.Color('black'), font_size=30,
+                 font_type=None, bold=False, italic=False):
+    font_type = pygame.font.Font(font_type, font_size)
+    font_type.set_bold(bold)
+    font_type.set_italic(italic)
+    text = font_type.render(text, True, font_color)
+    display.blit(text, cords)
+    return text
+
+
 class Button:  # класс для кнопок
     def __init__(self, x, y, width, height, text, image, func=None, glow=None):
         self.x = x
@@ -47,3 +57,4 @@ class Button:  # класс для кнопок
         if self.glow:
             display.blit(self.glow, (self.x, self.y))
         display.blit(image, (self.x, self.y))
+        drawing_text(self.text, (x, y), (220, 220, 220), size)
