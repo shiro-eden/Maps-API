@@ -2,11 +2,13 @@ import sys
 import requests
 import json
 import pygame
+from pprint import pprint
 from Button import Button
+from PyQt5.QtWidgets import QApplication
 from save_map_image import save_map_image
 from GameParameter import display, fps, clock
-from PyQt5.QtWidgets import QInputDialog
 from change_place import change_place
+from view_address import FullAddressWidget
 
 
 def change_view():
@@ -27,6 +29,30 @@ def show_change_place():
     global params
     params = change_place(params)
     save_map_image(map_file, params)
+
+
+def cancel_res():
+    global params
+    params['pt'] = ''
+    save_map_image(map_file, params)
+
+
+def view_full_address():
+    global widget
+    geocoder_params['geocode'] = params['ll']
+    request = requests.get(geocoder_api_server, params=geocoder_params).json()
+    request = request['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']
+    address = request['metaDataProperty']['GeocoderMetaData']['Address']['Components']
+    arg = ['locality', 'street', 'house', 'metro', 'district']
+    res = []
+    for i in address:
+        if i['kind'] in arg:
+            res.append(i['name'])
+    app = QApplication(sys.argv)
+    widget = FullAddressWidget()
+    widget.switch_address(', '.join(res))
+    widget.show()
+    sys.exit(app.exec_())
 
 
 toponym_to_find = 'Саратов'
@@ -64,15 +90,15 @@ map_file = 'map.png'
 save_map_image(map_file, params)
 
 show_change_place()
+widget_address = None
 pygame.init()
 running = True
 screen = pygame.display.set_mode((900, 450))
-change_view_btn_image = [pygame.image.load(f'button_{i}.png') for i in range(2)]
-change_view_btn = Button(630, 10, 250, 50, 'Спутник', change_view_btn_image,
-                         func=change_view)
-change_place_btn_image = [pygame.image.load(f'button_{i}.png') for i in range(2)]
-change_place_btn = Button(630, 100, 250, 50, 'Сменить место', change_place_btn_image,
-                          func=show_change_place)
+btn_image = [pygame.image.load(f'button_{i}.png') for i in range(2)]
+change_view_btn = Button(630, 10, 250, 50, 'Спутник', btn_image, func=change_view)
+change_place_btn = Button(630, 100, 250, 50, 'Сменить место', btn_image, func=show_change_place)
+cancel_place_btn = Button(630, 190, 250, 50, 'Сброс поискового запроса', btn_image, func=cancel_res)
+info_btn = Button(630, 280, 250, 50, 'Полный адрес', btn_image, func=view_full_address)
 while running:
     screen.fill((47, 49, 54))
     for event in pygame.event.get():
@@ -134,4 +160,6 @@ while running:
     display.blit(pygame.image.load(map_file), (0, 0))
     change_view_btn.draw(710, 25)
     change_place_btn.draw(680, 115)
+    cancel_place_btn.draw(632, 205, size=27)
+    info_btn.draw(675, 295)
     pygame.display.flip()
