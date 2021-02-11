@@ -138,7 +138,7 @@ while running:
                 if x < -180:
                     x = 180 - (-x - 180)
             if event.key == pygame.K_LEFT:
-                x -= spn * 2.5
+                x -= spn * 2.55
                 if y > 90:
                     y -= spn
                 if y < -90:
@@ -148,7 +148,7 @@ while running:
                 if x < -180:
                     x = 180 - (-x - 180)
             if event.key == pygame.K_RIGHT:
-                x += spn * 2.5
+                x += spn * 2.55
                 if y > 90:
                     y -= spn
                 if y < -90:
@@ -173,7 +173,17 @@ while running:
                 if x < 600 and y < 450:
                     spn = float(params['spn'].split(',')[0])
                     map_x, map_y = [float(i) for i in params['ll'].split(',')]
-                    new_x, new_y = ((x - 300) / 600 * 2.5 * spn + map_x), (-y + 450 / 2) / 450 * spn * 1.2 + map_y
+                    new_x, new_y = ((x - 300) / 600 * 2.55 * spn + map_x), (-y + 450 / 2) / 450 * spn * 1.2 + map_y
+                    params['pt'] = f'{new_x},{new_y},pmwtm1'
+                    params['type'] = 'geo'
+                    save_map_image(map_file, params)
+            elif event.button == 3:
+                x, y = event.pos
+                if x < 600 and y < 450:
+                    spn = float(params['spn'].split(',')[0])
+                    map_x, map_y = [float(i) for i in params['ll'].split(',')]
+                    new_x, new_y = ((x - 300) / 600 * 2.55 * spn + map_x), (-y + 450 / 2) / 450 * spn * 1.2 + map_y
+                    params['type'] = 'biz'
                     params['pt'] = f'{new_x},{new_y},pmwtm1'
                     save_map_image(map_file, params)
     display.blit(pygame.image.load(map_file), (0, 0))
