@@ -118,7 +118,7 @@ while running:
             x, y = [float(i) for i in params['ll'].split(',')]
             if event.key == pygame.K_UP:
                 spn = float(params['spn'].split(',')[0])
-                y += spn
+                y += spn * 1.2
                 if y > 90:
                     y -= spn
                 if y < -90:
@@ -128,7 +128,7 @@ while running:
                 if x < -180:
                     x = 180 - (-x - 180)
             if event.key == pygame.K_DOWN:
-                y -= spn
+                y -= spn * 1.2
                 if y > 90:
                     y -= spn
                 if y < -90:
@@ -138,7 +138,7 @@ while running:
                 if x < -180:
                     x = 180 - (-x - 180)
             if event.key == pygame.K_LEFT:
-                x -= spn
+                x -= spn * 2.5
                 if y > 90:
                     y -= spn
                 if y < -90:
@@ -148,7 +148,7 @@ while running:
                 if x < -180:
                     x = 180 - (-x - 180)
             if event.key == pygame.K_RIGHT:
-                x += spn
+                x += spn * 2.5
                 if y > 90:
                     y -= spn
                 if y < -90:
