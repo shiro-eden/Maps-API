@@ -2,7 +2,6 @@ import sys
 import requests
 import json
 import pygame
-from pprint import pprint
 from Button import Button
 from PyQt5.QtWidgets import QApplication
 from save_map_image import save_map_image
@@ -44,18 +43,22 @@ def view_full_address():
     geocoder_params['geocode'] = params['ll']
     request = requests.get(geocoder_api_server, params=geocoder_params).json()
     request = request['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']
-    address = request['metaDataProperty']['GeocoderMetaData']['Address']['Components']
+    address = request['metaDataProperty']['GeocoderMetaData']['Address']
     arg = ['locality', 'street', 'house', 'metro', 'district']
     res = []
-    for i in address:
+    for i in address['Components']:
         if i['kind'] in arg:
             res.append(i['name'])
     app = QApplication(sys.argv)
     widget = FullAddressWidget()
     if searched_flag:
-        widget.switch_address(', '.join(res))
+        if 'postal_code' in address:
+            postcode = address['postal_code']
+        else:
+            postcode = ''
+        widget.switch_address(', '.join(res), postcode)
     else:
-        widget.switch_address('Сначала выберите место')
+        widget.switch_address('Сначала выберите место', '')
     widget.show()
     app.exec_()
 
@@ -170,3 +173,4 @@ while running:
     cancel_place_btn.draw(632, 205, size=27)
     info_btn.draw(675, 295)
     pygame.display.flip()
+    clock.tick(fps)

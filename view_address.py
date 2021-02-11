@@ -1,7 +1,4 @@
-import sys
-from PyQt5.QtWidgets import QWidget, QApplication, QLineEdit
-import requests
-import json
+from PyQt5.QtWidgets import QWidget, QLineEdit, QCheckBox
 
 
 class FullAddressWidget(QWidget):
@@ -10,14 +7,35 @@ class FullAddressWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(0, 0, 300, 50)
+        self.setGeometry(0, 0, 300, 100)
         self.setWindowTitle('Полный Адрес')
 
-        self.address = QLineEdit(self)
-        self.address.resize(290, 40)
-        self.address.move(5, 5)
-        self.address.setReadOnly(True)
+        self.inp_address = QLineEdit(self)
+        self.inp_address.resize(290, 40)
+        self.inp_address.move(5, 5)
+        self.inp_address.setReadOnly(True)
 
-    def switch_address(self, address):
+        self.box_postcode = QCheckBox(self)
+        self.box_postcode.setText('Почтовый индекс')
+        self.box_postcode.move(5, 60)
+        self.box_postcode.clicked.connect(self.add_postcode)
+
+        self.postcode = ''
+        self.address = ''
+
+    def add_postcode(self):
+        pos = f'Почтовый индекс - {self.postcode}'
+        if self.postcode != '' and not self.inp_address.text().endswith(pos):
+            self.inp_address.setText(f'{self.address}, {pos}')
+        else:
+            self.inp_address.setText(self.address)
+
+    def switch_address(self, address, postcode):
+        self.postcode = postcode
+        self.address = address
+
+        if self.postcode == '':
+            self.box_postcode.setEnabled(False)
+
         if type(address) == str:
-            self.address.setText(address)
+            self.inp_address.setText(address)
