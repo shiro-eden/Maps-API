@@ -51,10 +51,7 @@ def change_place(params):
         return params
     x, y = coords
     params['ll'] = f'{x},{y}'
-    if not params['pt']:
-        params['pt'] += f'{x},{y},pmwtm1'
-    else:
-        params['pt'] += f'~{x},{y},pmwtm1'
+    params['pt'] = f'{x},{y},pmwtm1'
     return params
 
 

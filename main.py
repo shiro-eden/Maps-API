@@ -40,7 +40,7 @@ def cancel_res():
 
 def view_full_address():
     global widget
-    geocoder_params['geocode'] = params['ll']
+    geocoder_params['geocode'] = params['pt'][:-7]
     request = requests.get(geocoder_api_server, params=geocoder_params).json()
     request = request['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']
     address = request['metaDataProperty']['GeocoderMetaData']['Address']
@@ -167,6 +167,15 @@ while running:
                     params['spn'] = f'{spn / 2},{spn / 2}'
             params['ll'] = f'{x},{y}'
             save_map_image(map_file, params)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                x, y = event.pos
+                if x < 600 and y < 450:
+                    spn = float(params['spn'].split(',')[0])
+                    map_x, map_y = [float(i) for i in params['ll'].split(',')]
+                    new_x, new_y = ((x - 300) / 600 * 2.5 * spn + map_x), (-y + 450 / 2) / 450 * spn * 1.2 + map_y
+                    params['pt'] = f'{new_x},{new_y},pmwtm1'
+                    save_map_image(map_file, params)
     display.blit(pygame.image.load(map_file), (0, 0))
     change_view_btn.draw(710, 25)
     change_place_btn.draw(680, 115)
