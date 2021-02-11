@@ -26,15 +26,17 @@ def change_view():
 
 
 def show_change_place():
-    global params
+    global params, searched_flag
     params = change_place(params)
     save_map_image(map_file, params)
+    searched_flag = True
 
 
 def cancel_res():
-    global params
+    global params, searched_flag
     params['pt'] = ''
     save_map_image(map_file, params)
+    searched_flag = False
 
 
 def view_full_address():
@@ -50,11 +52,15 @@ def view_full_address():
             res.append(i['name'])
     app = QApplication(sys.argv)
     widget = FullAddressWidget()
-    widget.switch_address(', '.join(res))
+    if searched_flag:
+        widget.switch_address(', '.join(res))
+    else:
+        widget.switch_address('Сначала выберите место')
     widget.show()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
+searched_flag = True
 toponym_to_find = 'Саратов'
 geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
@@ -100,6 +106,7 @@ change_place_btn = Button(630, 100, 250, 50, 'Сменить место', btn_im
 cancel_place_btn = Button(630, 190, 250, 50, 'Сброс поискового запроса', btn_image, func=cancel_res)
 info_btn = Button(630, 280, 250, 50, 'Полный адрес', btn_image, func=view_full_address)
 while running:
+
     screen.fill((47, 49, 54))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

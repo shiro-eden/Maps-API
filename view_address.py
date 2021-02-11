@@ -16,7 +16,6 @@ class FullAddressWidget(QWidget):
         self.address = QLineEdit(self)
         self.address.resize(290, 40)
         self.address.move(5, 5)
-
         self.address.setReadOnly(True)
 
     def switch_address(self, address):

@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
 import requests
 import json
 
-
 class Example(QWidget):
     def __init__(self):
         super().__init__()
@@ -23,6 +22,7 @@ class Example(QWidget):
 
 
 def change_place(params):
+    global searched_flag
     app = QApplication(sys.argv)
     ex = Example()
     place = ex.run()
@@ -49,7 +49,6 @@ def change_place(params):
     except Exception:
         print('Адрес не найден')
         return params
-
     x, y = coords
     params['ll'] = f'{x},{y}'
     if not params['pt']:
